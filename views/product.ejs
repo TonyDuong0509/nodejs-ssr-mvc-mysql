@@ -28,6 +28,7 @@
     </div>
   </div>
   <div class="button-product-action clearfix">
+    <% if(product.inventory_qty > 0) { %>
     <div class="cart icon">
       <a
         class="btn btn-outline-inverse buy"
@@ -38,6 +39,7 @@
         Thêm vào giỏ <i class="fa fa-shopping-cart"></i>
       </a>
     </div>
+    <% } %>
     <div class="quickview icon">
       <a class="btn btn-outline-inverse" href="" title="Xem nhanh">
         Xem chi tiết <i class="fa fa-eye"></i>

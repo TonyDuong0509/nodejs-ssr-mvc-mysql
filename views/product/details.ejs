@@ -61,6 +61,18 @@
                       <%= helpers.formatMoney(product.sale_price) %>₫
                     </span>
               </div>
+              <% if(product.inventory_qty > 0) { %>
+                <div class="cart icon">
+                  <a
+                    class="btn btn-outline-inverse buy"
+                    product-id="<%=product.id%>"
+                    href="javascript:void(0)"
+                    title="Thêm vào giỏ"
+                  >
+                    Thêm vào giỏ <i class="fa fa-shopping-cart"></i>
+                  </a>
+                </div>
+                <% } %>
             </div>
           </div>
           <div class="row product-description">

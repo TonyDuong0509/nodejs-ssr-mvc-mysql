@@ -7,6 +7,7 @@ const PolicyController = require("./../controllers/PolicyController");
 const ContactController = require("./../controllers/ContactController");
 const AuthController = require("./../controllers/AuthController");
 const CustomerController = require("../controllers/CustomerController");
+const CartController = require("../controllers/CartController");
 
 router.get("/", HomeController.index);
 router.get("/san-pham.html", ProductController.index);
@@ -27,7 +28,10 @@ router.get(
   CustomerController.shippingDefault
 );
 router.get("/don-hang-cua-toi.html", CustomerController.orders);
-
+router.get("/chi-tiet-don-hang-:id.html", CustomerController.orderDetail);
 router.post("/customer/updateInfo", CustomerController.updateInfo);
+router.get("/cart/add", CartController.add);
+router.get("/cart/update", CartController.update);
+router.get("/cart/delete", CartController.delete);
 
 module.exports = router;

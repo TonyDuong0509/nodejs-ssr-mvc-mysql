@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const customerModel = require("./../models/Customer");
+const orderModel = require("./../models/Order");
 
 class CustomerController {
   static show = async (req, res) => {
@@ -15,10 +16,40 @@ class CustomerController {
   };
 
   static orders = async (req, res) => {
-    res.render("customer/orders");
+    const email = req.session.email;
+    const customer = await customerModel.findEmail(email);
+    const orders = await orderModel.getByCustomerId(customer.id);
+    for (let i = 0; i <= orders.length - 1; i++) {
+      orders[i].orderItems = await orders[i].getOrderItems();
+      for (let j = 0; j <= orders[i].orderItems.length - 1; j++) {
+        orders[i].orderItems[j].product = await orders[i].orderItems[
+          j
+        ].getProduct();
+      }
+      orders[i].status = await orders[i].getStatus();
+    }
+    res.render("customer/orders", { orders });
   };
 
-  static orderDetail = async (req, res) => {};
+  static orderDetail = async (req, res) => {
+    const { id } = req.params;
+    const order = await orderModel.find(id);
+    order.orderItems = await order.getOrderItems();
+    for (let i = 0; i <= order.orderItems.length - 1; i++) {
+      order.orderItems[i].product = await order.orderItems[i].getProduct();
+    }
+    order.total_price = await order.getSubTotalPrice();
+
+    const shippingWard = await order.getShippingWard();
+    const shippingDistrict = await shippingWard.getDistrict();
+    const shippingProvince = await shippingDistrict.getProvince();
+    res.render("customer/orderDetail", {
+      order,
+      shippingWard,
+      shippingDistrict,
+      shippingProvince,
+    });
+  };
 
   static updateInfo = async (req, res) => {
     const email = req.session.email;

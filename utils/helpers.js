@@ -31,6 +31,18 @@ exports.getCurrentRoute = (path) => {
   if (path === "lien-he.html") {
     return "contact";
   }
+  if (path === "thong-tin-tai-khoan.html") {
+    return "show";
+  }
+  if (path === "dia-chi-giao-hang-mac-dinh.html") {
+    return "shippingDefault";
+  }
+  if (path === "don-hang-cua-toi.html") {
+    return "orders";
+  }
+  if (path.match(/^chi-tiet-don-hang-/)) {
+    return "orderDetail ";
+  }
 };
 
 exports.getCategoryRoute = (category) => {
@@ -41,6 +53,10 @@ exports.getCategoryRoute = (category) => {
 exports.getProductDetails = (product) => {
   const slug = slugify(product.name, { lower: true });
   return `/san-pham/${slug}-${product.id}.html`;
+};
+
+exports.getOrderDetails = (order) => {
+  return `/chi-tiet-don-hang-${order.id}.html`;
 };
 
 exports.sendEmail = async (to, subject, content) => {

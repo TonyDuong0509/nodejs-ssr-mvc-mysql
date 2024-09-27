@@ -162,7 +162,6 @@ $(function () {
       type: "GET",
       data: { product_id: product_id, qty: 1 },
     }).done(function () {
-      // console.log(data);
       displayCart();
     });
   });
