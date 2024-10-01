@@ -8,6 +8,8 @@ const ContactController = require("./../controllers/ContactController");
 const AuthController = require("./../controllers/AuthController");
 const CustomerController = require("../controllers/CustomerController");
 const CartController = require("../controllers/CartController");
+const PaymentController = require("../controllers/PaymentController");
+const AddressController = require("../controllers/AddressController");
 
 router.get("/", HomeController.index);
 router.get("/san-pham.html", ProductController.index);
@@ -30,8 +32,16 @@ router.get(
 router.get("/don-hang-cua-toi.html", CustomerController.orders);
 router.get("/chi-tiet-don-hang-:id.html", CustomerController.orderDetail);
 router.post("/customer/updateInfo", CustomerController.updateInfo);
+router.post(
+  "/customer/updateShippingDefault",
+  CustomerController.updateShippingDefault
+);
 router.get("/cart/add", CartController.add);
 router.get("/cart/update", CartController.update);
 router.get("/cart/delete", CartController.delete);
+router.get("/dat-hang.html", PaymentController.checkout);
+router.get("/address/districts", AddressController.districts);
+router.get("/address/wards", AddressController.wards);
+router.post("/thanh-toan.html", PaymentController.order);
 
 module.exports = router;

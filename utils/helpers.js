@@ -80,3 +80,16 @@ exports.sendEmail = async (to, subject, content) => {
     html: content, // html body
   });
 };
+
+exports.getCurrentDateTime = () => {
+  const { format } = require("date-fns");
+  const today = format(new Date(), "yyyy-MM-dd H:mm:s");
+  return today;
+};
+
+exports.getThreeLaterDateTime = () => {
+  const { format, addDays } = require("date-fns");
+  const threeDaysLater = addDays(new Date(), 3);
+  const datetime = format(threeDaysLater, "yyyy-MM-dd H:mm:s");
+  return datetime;
+};

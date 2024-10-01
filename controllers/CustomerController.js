@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const customerModel = require("./../models/Customer");
 const orderModel = require("./../models/Order");
+const Provinces = require("./../models/Province");
+const District = require("./../models/District");
+const Ward = require("./../models/Ward");
 
 class CustomerController {
   static show = async (req, res) => {
@@ -12,7 +15,32 @@ class CustomerController {
   };
 
   static shippingDefault = async (req, res) => {
-    res.render("customer/shippingDefault");
+    const email = req.session.email;
+    const customer = await customerModel.findEmail(email);
+    const provinces = await Provinces.all();
+    const selectedWardId = customer.ward_id;
+    let districts = [];
+    let wards = [];
+    let selectedDistrictId = "";
+    let selectedProvinceId = "";
+    if (selectedWardId) {
+      const selectedWard = await Ward.find(selectedWardId);
+      selectedDistrictId = selectedWard.district_id;
+      wards = await Ward.getByDistrictId(selectedDistrictId);
+
+      const selectedDistrict = await District.find(selectedDistrictId);
+      selectedProvinceId = selectedDistrict.province_id;
+      districts = await District.getByProvinceId(selectedProvinceId);
+    }
+    res.render("customer/shippingDefault", {
+      customer,
+      provinces,
+      districts,
+      wards,
+      selectedWardId,
+      selectedDistrictId,
+      selectedProvinceId,
+    });
   };
 
   static orders = async (req, res) => {
@@ -71,6 +99,22 @@ class CustomerController {
     await customer.update();
     req.session.message_success = "Đã cập nhật thông tin thành công";
     req.session.save(() => res.redirect("/thong-tin-tai-khoan.html"));
+    return;
+  };
+
+  static updateShippingDefault = async (req, res) => {
+    const email = req.session.email;
+    const customer = await customerModel.findEmail(email);
+
+    customer.shipping_name = req.body.fullname;
+    customer.shipping_mobile = req.body.mobile;
+    customer.housenumber_street = req.body.address;
+    customer.ward_id = req.body.ward;
+
+    await customer.update();
+    req.session.message_success =
+      "Đã cập nhật địa chỉ giao hàng mặc định thành công";
+    req.session.save(() => res.redirect("/dia-chi-giao-hang-mac-dinh.html"));
     return;
   };
 }

@@ -40,18 +40,6 @@ $(function () {
         required: true,
         equalTo: "[name=password]",
       },
-
-      hiddenRecaptcha: {
-        //true: lỗi
-        //false: passed
-        required: function () {
-          if (grecaptcha.getResponse() == "") {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
     },
 
     messages: {
