@@ -4,6 +4,7 @@ const orderModel = require("./../models/Order");
 const Provinces = require("./../models/Province");
 const District = require("./../models/District");
 const Ward = require("./../models/Ward");
+const jwt = require("jsonwebtoken");
 
 class CustomerController {
   static show = async (req, res) => {
@@ -116,6 +117,77 @@ class CustomerController {
       "Đã cập nhật địa chỉ giao hàng mặc định thành công";
     req.session.save(() => res.redirect("/dia-chi-giao-hang-mac-dinh.html"));
     return;
+  };
+
+  static register = async (req, res) => {
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+    const data = {
+      name: req.body.fullname,
+      mobile: req.body.mobile,
+      email: req.body.email,
+      login_by: "form",
+      ward_id: null,
+      shipping_name: req.body.fullname,
+      shipping_mobile: req.body.mobile,
+      housenumber_street: "",
+      is_active: 0,
+      password: hashedPassword,
+    };
+    await customerModel.save(data);
+
+    const to = data.email;
+    const subject = "Verify Email";
+    const token = jwt.sign({ email: to }, process.env.JWT_TOKEN_SECRET, {
+      algorithm: "HS256",
+    });
+    const web = `${req.protocol}://${req.headers.host}`;
+    const linkActiveAccount = `${web}/customer/active/token/${token}`;
+    const content = `<a href='${linkActiveAccount}'>Click here to active account</a> <br>
+    Được gửi từ web: ${web}`;
+    req.app.locals.helpers.sendEmail(to, subject, content);
+
+    req.session.message_success = "Đã tạo tài khoản thành công";
+    req.session.save(() => res.redirect("/"));
+  };
+
+  static active = async (req, res) => {
+    const token = req.params.token;
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    const email = decoded.email;
+    const customer = await customerModel.findEmail(email);
+    customer.is_active = 1;
+    await customer.update();
+
+    req.session.message_success = "Đã kích hoạt tài khoản thành công";
+    req.session.save(() => res.redirect("/"));
+  };
+
+  static forgotpassword = async (req, res) => {
+    const to = req.body.email;
+    const subject = "Verify Email";
+    const token = jwt.sign({ email: to }, process.env.JWT_TOKEN_SECRET, {
+      algorithm: "HS256",
+    });
+    const web = `${req.protocol}://${req.headers.host}`;
+    const linkActiveAccount = `${web}/customer/resetpassword/token/${token}`;
+    const content = `<a href='${linkActiveAccount}'>Click here to reset password</a> <br>
+    Được gửi từ web: ${web}`;
+    req.app.locals.helpers.sendEmail(to, subject, content);
+
+    req.session.message_success =
+      "Đã gửi reset password, please check your email";
+    req.session.save(() => res.redirect("/"));
+  };
+
+  static resetpassword = async (req, res) => {
+    const token = req.params.token;
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    const email = decoded.email;
+    res.render("customer/forgotpassword", {
+      email: email,
+      token: token,
+    });
   };
 }
 

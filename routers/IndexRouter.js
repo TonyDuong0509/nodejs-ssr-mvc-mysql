@@ -43,5 +43,15 @@ router.get("/dat-hang.html", PaymentController.checkout);
 router.get("/address/districts", AddressController.districts);
 router.get("/address/wards", AddressController.wards);
 router.post("/thanh-toan.html", PaymentController.order);
+router.post("/customer/register", CustomerController.register);
+
+router.get("/customer/active/token/:token", CustomerController.active);
+
+router.post("/forgotpassword", CustomerController.forgotpassword);
+
+router.get(
+  "/customer/resetpassword/token/:token",
+  CustomerController.resetpassword
+);
 
 module.exports = router;

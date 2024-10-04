@@ -45,7 +45,9 @@ app.use((req, res, next) => {
 });
 
 const indexRouter = require("./routers/IndexRouter");
+const adminRouter = require("./routers/AdminRouter");
 app.use("/", indexRouter);
+app.use("/admin", adminRouter);
 
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}/`);
